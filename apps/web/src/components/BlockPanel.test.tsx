@@ -1,4 +1,5 @@
 import { render, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { Id } from "@programionize/backend/convex/_generated/dataModel";
 import { BlockPanel, type BlockView } from "./BlockPanel";
@@ -50,7 +51,7 @@ function session(
 }
 
 describe("BlockPanel", () => {
-  it("shows soft warnings when block rules fail", () => {
+  it("shows compact warning indicator when block rules fail", () => {
     const { container } = render(
       <BlockPanel
         block={makeBlock()}
@@ -61,11 +62,12 @@ describe("BlockPanel", () => {
     );
 
     expect(
-      within(container).getByLabelText(/block warnings/i),
-    ).toHaveTextContent(/more than 3 sessions/i);
+      within(container).getByLabelText(/1 block warning/i),
+    ).toBeInTheDocument();
+    expect(within(container).getByText("Warning")).toBeInTheDocument();
   });
 
-  it("shows no warning list for a valid block", () => {
+  it("shows good status for a valid block", () => {
     const validBlock: BlockView = {
       _id: blockId,
       label: "Block 1",
@@ -85,12 +87,14 @@ describe("BlockPanel", () => {
       />,
     );
 
+    expect(within(container).getByText("Good")).toBeInTheDocument();
     expect(
-      within(container).queryByLabelText(/block warnings/i),
+      within(container).queryByLabelText(/block warning/i),
     ).toBeNull();
   });
 
-  it("warns when the block contains a removed session", () => {
+  it("reveals warning details in a popover", async () => {
+    const user = userEvent.setup();
     const { container } = render(
       <BlockPanel
         block={makeBlock({
@@ -104,8 +108,34 @@ describe("BlockPanel", () => {
       />,
     );
 
-    expect(
-      within(container).getByLabelText(/block warnings/i),
-    ).toHaveTextContent(/no longer in the catalog/i);
+    await user.click(
+      within(container).getByLabelText(/block warning/i),
+    );
+
+    expect(document.body).toHaveTextContent(/no longer in the catalog/i);
+  });
+
+  it("calls onSelect when the block header is clicked", async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const { container } = render(
+      <BlockPanel
+        block={makeBlock({
+          sessionCount: 2,
+          totalMinutes: 90,
+          sessions: [
+            session({ _id: "1", lengthMinutes: 60 }),
+            session({ _id: "2", lengthMinutes: 30 }),
+          ],
+        })}
+        activeDragId={null}
+        onSelect={onSelect}
+        onRename={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    await user.click(within(container).getByRole("heading", { name: "Block 1" }));
+    expect(onSelect).toHaveBeenCalledWith(blockId);
   });
 });

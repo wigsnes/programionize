@@ -62,10 +62,10 @@ export function PageNav({
                   <button
                     type="button"
                     className={cn(
-                      "min-w-0 flex-1 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
+                      "min-w-0 flex-1 rounded-md px-2.5 py-2 text-left text-sm transition-all",
                       isSelected
                         ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     )}
                     aria-current={isSelected ? "page" : undefined}
                     onClick={() => onSelect(page._id)}
@@ -74,7 +74,7 @@ export function PageNav({
                       className={cn(
                         "block truncate",
                         isSelected &&
-                          "border-l-2 border-primary pl-2 -ml-0.5",
+                          "border-l-2 border-sidebar-primary pl-2 -ml-0.5",
                       )}
                     >
                       {page.name}

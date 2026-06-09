@@ -9,6 +9,7 @@ import {
   AppShell,
 } from "../components/AppShell";
 import { useConfirm } from "../components/dialogs/DialogProvider";
+import { ImportPanel } from "../components/ImportPanel";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -21,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { AdminSessionTabs } from "../components/AdminSessionTabs";
 import {
   ALL_TAB_ID,
   buildAdminSessionTabs,
@@ -189,24 +190,18 @@ export function AdminSessionsPage() {
       }
     >
       <main className="flex min-h-0 flex-1 flex-col gap-4 p-6">
-        <p className="text-sm text-muted-foreground">
-          Toggle which sessions appear in the program editor catalog. Sessions
-          hidden here stay in blocks but show dimmed with a warning.
-        </p>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="h-auto flex-wrap">
-            {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                className="flex flex-col items-start gap-0.5 px-4 py-2"
-              >
-                <span className="text-sm font-semibold">{tab.label}</span>
-                <span className="text-xs text-muted-foreground">{tab.count}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            Toggle which sessions appear in the program editor catalog. Sessions
+            hidden here stay in blocks but show dimmed with a warning.
+          </p>
+          <ImportPanel />
+        </div>
+        <AdminSessionTabs
+          tabs={tabs}
+          value={activeTab}
+          onValueChange={setActiveTab}
+        />
         <div className="flex items-center gap-4">
           <Input
             type="search"

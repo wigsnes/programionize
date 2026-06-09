@@ -10,10 +10,12 @@ import {
   AppShell,
 } from "./components/AppShell";
 import { useConfirm, usePrompt } from "./components/dialogs/DialogProvider";
-import { ImportPanel } from "./components/ImportPanel";
+import { IssuesPanel } from "./components/IssuesPanel";
 import { PageNav } from "./components/PageNav";
+import { ProgramHealthBadge } from "./components/ProgramHealthBadge";
 import { ProgramWorkspace } from "./components/ProgramWorkspace";
 import { Button } from "./components/ui/button";
+import { computeProgramHealth } from "./lib/program-health";
 
 export function App() {
   const { sessionToken, signOut } = useAccess();
@@ -22,6 +24,7 @@ export function App() {
   const [selectedPageId, setSelectedPageId] = useState<Id<"programPages"> | null>(
     null,
   );
+  const [issuesOpen, setIssuesOpen] = useState(false);
 
   const pages =
     useQuery(
@@ -61,6 +64,18 @@ export function App() {
     const assigned = new Set(workspace?.assignedSessionIds ?? []);
     return unassignedSessions(sessions, assigned);
   }, [sessions, workspace?.assignedSessionIds]);
+
+  const programHealth = useMemo(
+    () =>
+      computeProgramHealth(
+        (workspace?.blocks ?? []).map((block) => ({
+          _id: block._id,
+          label: block.label,
+          sessions: block.sessions,
+        })),
+      ),
+    [workspace?.blocks],
+  );
 
   async function handleCreatePage() {
     if (!sessionToken) return;
@@ -106,16 +121,27 @@ export function App() {
   return (
     <AppShell
       title="Programionize"
-      actions={
+      nav={
         <>
+          <AppNavLink href="/" active>
+            Pages
+          </AppNavLink>
           <AppNavLink href="/suggestions">AI suggestions</AppNavLink>
           <AppNavLink href="/admin">Admin</AppNavLink>
-          <AppHeaderSeparator />
-          <ImportPanel />
-          <Button variant="outline" size="sm" onClick={signOut}>
-            Sign out
-          </Button>
         </>
+      }
+      health={
+        activePageId ? (
+          <ProgramHealthBadge
+            health={programHealth}
+            onClick={() => setIssuesOpen(true)}
+          />
+        ) : null
+      }
+      actions={
+        <Button variant="outline" size="sm" onClick={signOut}>
+          Sign out
+        </Button>
       }
     >
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -145,6 +171,11 @@ export function App() {
           </p>
         )}
       </div>
+      <IssuesPanel
+        health={programHealth}
+        open={issuesOpen}
+        onOpenChange={setIssuesOpen}
+      />
     </AppShell>
   );
 }

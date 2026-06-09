@@ -1,6 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { fieldStripeColor, sessionHeightPx } from "../lib/field-colors";
+import {
+  fieldStripeColor,
+  lengthBarColor,
+  sessionHeightPx,
+} from "../lib/field-colors";
 import { isHiddenFromCatalog, type CatalogSession } from "../lib/sessions";
 
 export type SessionCardProps = {
@@ -13,34 +17,47 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
   const isHidden = !isRemoved && isHiddenFromCatalog(session);
   const isService = session.isServiceSession;
   const stripeColor = fieldStripeColor(session.field);
+  const durationColor = lengthBarColor(session.lengthMinutes);
 
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-md border border-border/60 bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md",
-        variant === "compact" ? "min-h-16" : "",
+        "relative overflow-hidden rounded-lg border border-border bg-card text-card-foreground transition-colors",
+        variant === "compact" ? "min-h-16 shadow-sm hover:shadow" : "shadow-sm",
         isRemoved && "border-dashed opacity-60",
         isHidden && "opacity-70",
         isService && "opacity-80",
       )}
       style={{
-        borderLeftWidth: "4px",
-        borderLeftColor: stripeColor,
+        borderLeftWidth: variant === "timeline" ? "3px" : undefined,
+        borderLeftColor: variant === "timeline" ? stripeColor : undefined,
         minHeight:
           variant === "timeline"
             ? sessionHeightPx(session.lengthMinutes)
             : undefined,
       }}
     >
-      <div className="flex h-full flex-col px-3 py-2">
+      {variant === "compact" ? (
+        <div
+          className="absolute top-0 bottom-0 left-0 w-1 rounded-l-lg"
+          style={{ backgroundColor: durationColor }}
+          aria-hidden
+        />
+      ) : null}
+      <div
+        className={cn(
+          "flex h-full flex-col py-2.5",
+          variant === "compact" ? "pl-3.5 pr-3" : "px-3",
+        )}
+      >
         <header className="flex flex-wrap items-center gap-1.5">
           <Badge
             variant="secondary"
-            className="px-1.5 py-0 text-[0.6rem] font-semibold tracking-wide uppercase"
+            className="px-1.5 py-0 text-[0.6rem] font-medium tracking-wide uppercase"
           >
             {session.field ?? "No field"}
           </Badge>
-          <span className="ml-auto text-[0.65rem] font-medium text-muted-foreground tabular-nums">
+          <span className="ml-auto text-xs font-medium text-foreground/60 tabular-nums">
             {session.lengthMinutes ? `${session.lengthMinutes} min` : "?"}
           </span>
           {isService ? (
@@ -49,7 +66,10 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
             </Badge>
           ) : null}
           {isRemoved ? (
-            <Badge variant="outline" className="border-amber-500/50 text-[0.6rem] text-amber-700 dark:text-amber-400">
+            <Badge
+              variant="outline"
+              className="border-amber-400/50 text-[0.6rem] text-amber-700"
+            >
               Removed
             </Badge>
           ) : null}
@@ -59,11 +79,11 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
             </Badge>
           ) : null}
         </header>
-        <h3 className="mt-1 line-clamp-2 text-sm leading-snug font-medium">
+        <h3 className="mt-1.5 line-clamp-2 text-sm leading-snug font-medium text-foreground">
           {session.title}
         </h3>
         {session.speakerNames.length > 0 && (
-          <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+          <p className="mt-0.5 line-clamp-1 text-xs text-foreground/55">
             {session.speakerNames.join(", ")}
           </p>
         )}

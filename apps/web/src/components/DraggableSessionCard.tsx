@@ -18,7 +18,7 @@ export function DraggableSessionCard({
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
-      id: session._id,
+      id: String(session._id),
     });
 
   const style = {

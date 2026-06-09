@@ -83,3 +83,54 @@ export function filterSessions(
     return haystack.includes(needle);
   });
 }
+
+export function uniqueFields(sessions: CatalogSession[]): string[] {
+  const fields = new Set<string>();
+  for (const session of sessions) {
+    if (session.field) fields.add(session.field);
+  }
+  return [...fields].sort((a, b) => a.localeCompare(b));
+}
+
+export function filterByField(
+  sessions: CatalogSession[],
+  field: string | null,
+): CatalogSession[] {
+  if (!field) return sessions;
+  return sessions.filter((session) => session.field === field);
+}
+
+export function uniqueLengths(sessions: CatalogSession[]): number[] {
+  const lengths = new Set<number>();
+  for (const session of sessions) {
+    if (session.lengthMinutes != null) lengths.add(session.lengthMinutes);
+  }
+  return [...lengths].sort((a, b) => a - b);
+}
+
+export function filterByLength(
+  sessions: CatalogSession[],
+  lengthMinutes: number | null,
+): CatalogSession[] {
+  if (lengthMinutes === null) return sessions;
+  return sessions.filter((session) => session.lengthMinutes === lengthMinutes);
+}
+
+export type SelectedBlockStats = {
+  sessionCount: number;
+  totalMinutes: number;
+};
+
+export function filterFitsBlock(
+  sessions: CatalogSession[],
+  block: SelectedBlockStats | null,
+): CatalogSession[] {
+  if (!block) return sessions;
+  return sessions.filter((session) => {
+    const length = session.lengthMinutes ?? 0;
+    return (
+      block.sessionCount < 3 &&
+      block.totalMinutes + length <= 90
+    );
+  });
+}
