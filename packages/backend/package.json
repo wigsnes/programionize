@@ -1,0 +1,29 @@
+{
+  "name": "@programionize/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "CONVEX_AGENT_MODE=anonymous convex dev",
+    "build": "convex codegen",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p convex"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.22",
+    "@programionize/access": "workspace:*",
+    "@programionize/ai-suggestions": "workspace:*",
+    "@programionize/program-layout": "workspace:*",
+    "@programionize/session-import": "workspace:*",
+    "ai": "^4.3.16",
+    "convex": "^1.31.6",
+    "sessionize_api": "^0.5.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "convex-test": "^0.0.41",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  }
+}
