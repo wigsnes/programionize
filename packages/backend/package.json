@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "CONVEX_AGENT_MODE=anonymous convex dev",
-    "build": "convex codegen",
+    "codegen": "convex codegen",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p convex"
   },
