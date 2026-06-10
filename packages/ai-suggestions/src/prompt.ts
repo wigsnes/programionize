@@ -29,8 +29,13 @@ export function compactSessionDescription(
 
 function formatSessionLine(session: SuggestionInputSession): string {
   const minutes = session.lengthMinutes ?? "?";
+  const field = session.field ? `[${session.field}] ` : "";
+  const speakers =
+    session.speakerNames.length > 0
+      ? `speakers: ${session.speakerNames.join(", ")} | `
+      : "";
   const description = compactSessionDescription(session.description);
-  return `- id=${session.sessionizeId} | ${session.title} | ${minutes} min | ${description}`;
+  return `- id=${session.sessionizeId} | ${field}${session.title} | ${minutes} min | ${speakers}${description}`;
 }
 
 const PROMPT_HEADER = [
@@ -38,7 +43,22 @@ const PROMPT_HEADER = [
   "Each block should have at most 3 sessions and total about 80–90 minutes (advisory, not strict).",
   "Use only the session ids provided. Every session listed below must appear in exactly one group.",
   "Prefer thematic fit from title and description.",
+  "Prefer grouping sessions with the same Field when thematically similar.",
 ].join("\n");
+
+export function buildReconciliationPrompt(
+  sessions: SuggestionInputSession[],
+): string {
+  const header = [
+    "Place these remaining conference talks into thematic program blocks.",
+    "Each block should have at most 3 sessions and total about 80–90 minutes.",
+    "Use only the session ids provided. Every session listed must appear in exactly one group.",
+    "You may create new groups or add sessions to themes that fit.",
+  ].join("\n");
+  return [header, "", "Sessions:", ...sessions.map(formatSessionLine)].join(
+    "\n",
+  );
+}
 
 export function buildSuggestionPrompt(sessions: SuggestionInputSession[]): string {
   return [PROMPT_HEADER, "", "Sessions:", ...sessions.map(formatSessionLine)].join(

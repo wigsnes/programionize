@@ -1,6 +1,5 @@
 import type { Id } from "@programionize/backend/convex/_generated/dataModel";
 import { AlertTriangle, MoreHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,6 +46,8 @@ type BlockPanelProps = {
   onSelect?: (blockId: Id<"blocks">) => void;
   onRename: (blockId: Id<"blocks">) => void;
   onRemove: (blockId: Id<"blocks">) => void;
+  onAiComplete?: (blockId: Id<"blocks">) => void;
+  onAiReview?: (blockId: Id<"blocks">) => void;
 };
 
 export function BlockPanel({
@@ -57,6 +58,8 @@ export function BlockPanel({
   onSelect,
   onRename,
   onRemove,
+  onAiComplete,
+  onAiReview,
 }: BlockPanelProps) {
   const sessionInputs = block.sessions.map((session) => ({
     lengthMinutes: session.lengthMinutes,
@@ -216,7 +219,17 @@ export function BlockPanel({
                 <MoreHorizontal className="size-3.5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36">
+            <DropdownMenuContent align="end" className="w-44">
+              {onAiComplete ? (
+                <DropdownMenuItem onClick={() => onAiComplete(block._id)}>
+                  AI: Complete block
+                </DropdownMenuItem>
+              ) : null}
+              {onAiReview ? (
+                <DropdownMenuItem onClick={() => onAiReview(block._id)}>
+                  AI: Review block
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem onClick={() => onRename(block._id)}>
                 Rename
               </DropdownMenuItem>

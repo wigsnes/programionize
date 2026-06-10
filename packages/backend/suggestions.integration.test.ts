@@ -30,16 +30,31 @@ describe("AI suggestions", () => {
           title: "Platform",
           rationale: "Infra",
           sessions: [
-            { sessionizeId: "a", title: "Talk A", lengthMinutes: 30 },
+            {
+              sessionizeId: "a",
+              title: "Talk A",
+              lengthMinutes: 30,
+              field: "Dev",
+            },
           ],
           totalMinutes: 30,
+          warnings: [],
         },
       ],
+      report: {
+        inputSessionCount: 1,
+        groupedSessionCount: 1,
+        uncoveredSessions: [],
+        duplicateSessionIds: [],
+        invalidSessionIds: [],
+      },
+      model: "gpt-4o-mini",
       createdAt: 100,
     });
 
     const latest = await t.query(api.suggestions.getLatest, { sessionToken });
     expect(latest?.groups[0]?.title).toBe("Platform");
+    expect(latest?.report.groupedSessionCount).toBe(1);
   });
 
   it("requires OPENAI_API_KEY to generate", async () => {

@@ -11,12 +11,16 @@ const sessions: SuggestionInputSession[] = [
     title: "Talk A",
     description: "kubernetes",
     lengthMinutes: 30,
+    field: "Dev",
+    speakerNames: ["Alice"],
   },
   {
     sessionizeId: "b",
     title: "Talk B",
     description: null,
     lengthMinutes: 45,
+    field: "Ops",
+    speakerNames: [],
   },
 ];
 
@@ -38,10 +42,21 @@ describe("enrichSuggestedGroups", () => {
         title: "Platform",
         rationale: "Infra themed",
         sessions: [
-          { sessionizeId: "a", title: "Talk A", lengthMinutes: 30 },
-          { sessionizeId: "b", title: "Talk B", lengthMinutes: 45 },
+          {
+            sessionizeId: "a",
+            title: "Talk A",
+            lengthMinutes: 30,
+            field: "Dev",
+          },
+          {
+            sessionizeId: "b",
+            title: "Talk B",
+            lengthMinutes: 45,
+            field: "Ops",
+          },
         ],
         totalMinutes: 75,
+        warnings: [],
       },
     ]);
   });
@@ -74,10 +89,21 @@ describe("formatGroupForClipboard", () => {
       title: "Platform",
       rationale: "Infra themed",
       sessions: [
-        { sessionizeId: "a", title: "Talk A", lengthMinutes: 30 },
-        { sessionizeId: "b", title: "Talk B", lengthMinutes: 45 },
+        {
+          sessionizeId: "a",
+          title: "Talk A",
+          lengthMinutes: 30,
+          field: "Dev",
+        },
+        {
+          sessionizeId: "b",
+          title: "Talk B",
+          lengthMinutes: 45,
+          field: "Ops",
+        },
       ],
       totalMinutes: 75,
+      warnings: [],
     });
 
     expect(text).toContain("Platform");

@@ -31,12 +31,67 @@ const groups = [
     title: "Platform",
     rationale: "Infra talks",
     sessions: [
-      { sessionizeId: "a", title: "Talk A", lengthMinutes: 30 },
-      { sessionizeId: "b", title: "Talk B", lengthMinutes: 45 },
+      {
+        sessionizeId: "a",
+        title: "Talk A",
+        lengthMinutes: 30,
+        field: "Dev",
+      },
+      {
+        sessionizeId: "b",
+        title: "Talk B",
+        lengthMinutes: 45,
+        field: "Ops",
+      },
     ],
     totalMinutes: 75,
+    warnings: [],
   },
 ];
+
+const report = {
+  inputSessionCount: 2,
+  groupedSessionCount: 2,
+  uncoveredSessions: [],
+  duplicateSessionIds: [],
+  invalidSessionIds: [],
+};
+
+let sessionOnlyCalls = 0;
+let pageScopedCalls = 0;
+
+function mockUseQuery(...args: unknown[]) {
+  const queryArgs = args[1];
+  if (queryArgs === "skip") return undefined;
+  if (queryArgs && typeof queryArgs === "object" && "programPageId" in queryArgs) {
+    pageScopedCalls += 1;
+    return pageScopedCalls % 2 === 1
+      ? {
+          page: { _id: "page1", name: "Main" },
+          blocks: [],
+          assignedSessionIds: [],
+        }
+      : { pageName: "Main", unassigned: [] };
+  }
+  sessionOnlyCalls += 1;
+  if (sessionOnlyCalls === 1) {
+    return {
+      groups,
+      report,
+      model: "gpt-4o-mini",
+      createdAt: 1,
+      scope: "full",
+      metadata: { stages: [] },
+    };
+  }
+  if (sessionOnlyCalls === 2) {
+    return [{ _id: "page1", name: "Main", sortOrder: 0 }];
+  }
+  if (sessionOnlyCalls === 3) {
+    return [];
+  }
+  return [];
+}
 
 vi.mock("convex/react", () => ({
   useQuery: vi.fn(),
@@ -46,7 +101,9 @@ vi.mock("convex/react", () => ({
 
 describe("SuggestionsPage", () => {
   it("lists suggested groups separately from the program editor", () => {
-    vi.mocked(useQuery).mockReturnValue({ groups, createdAt: 1 });
+    sessionOnlyCalls = 0;
+    pageScopedCalls = 0;
+    vi.mocked(useQuery).mockImplementation(mockUseQuery);
 
     const { container } = renderPage();
     const page = within(container);
@@ -63,7 +120,9 @@ describe("SuggestionsPage", () => {
   });
 
   it("shows confirmation after copying a group", async () => {
-    vi.mocked(useQuery).mockReturnValue({ groups, createdAt: 1 });
+    sessionOnlyCalls = 0;
+    pageScopedCalls = 0;
+    vi.mocked(useQuery).mockImplementation(mockUseQuery);
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, { clipboard: { writeText } });
 

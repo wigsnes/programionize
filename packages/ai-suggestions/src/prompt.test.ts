@@ -14,6 +14,8 @@ const session = (
   title: "Talk",
   description: null,
   lengthMinutes: 30,
+  field: "Dev",
+  speakerNames: ["Jane Doe"],
   ...overrides,
 });
 
@@ -34,6 +36,12 @@ describe("buildSuggestionPrompt", () => {
     ]);
     expect(prompt).toContain("Hello world");
     expect(prompt).not.toContain("<b>");
+  });
+
+  it("includes field and speaker names", () => {
+    const prompt = buildSuggestionPrompt([session()]);
+    expect(prompt).toContain("[Dev]");
+    expect(prompt).toContain("speakers: Jane Doe");
   });
 });
 

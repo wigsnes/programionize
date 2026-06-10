@@ -25,11 +25,13 @@ export function enrichSuggestedGroups(
         sessionizeId: session.sessionizeId,
         title: session.title,
         lengthMinutes: session.lengthMinutes,
+        field: session.field,
       })),
       totalMinutes: resolved.reduce(
         (sum, session) => sum + (session.lengthMinutes ?? 0),
         0,
       ),
+      warnings: [],
     });
   }
 

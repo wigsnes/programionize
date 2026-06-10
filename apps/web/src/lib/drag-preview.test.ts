@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Id } from "@programionize/backend/convex/_generated/dataModel";
 import type { BlockView } from "../components/BlockPanel";
-import { sessionFitsBlock } from "./drag-preview";
+import { dragHintMessage, sessionFitsBlock } from "./drag-preview";
 
 const blockId = "blocks_1" as Id<"blocks">;
 
@@ -47,6 +47,27 @@ describe("sessionFitsBlock", () => {
     const block = makeBlock();
     expect(sessionFitsBlock(session({ _id: "4", lengthMinutes: 15 }), block)).toBe(
       false,
+    );
+  });
+});
+
+describe("dragHintMessage", () => {
+  it("includes AI fit label when provided", () => {
+    const block = makeBlock();
+    const catalogSession = {
+      _id: "4" as Id<"sessions">,
+      title: "Talk",
+      description: null,
+      field: "Dev",
+      lengthMinutes: 15,
+      speakerNames: [],
+      sessionizeStatus: "Accept_Queue" as const,
+      isServiceSession: false,
+      status: "active" as const,
+      sessionizeId: "sz4",
+    };
+    expect(dragHintMessage(block, catalogSession, "strong")).toBe(
+      "Strong AI fit · would be 105 min",
     );
   });
 });

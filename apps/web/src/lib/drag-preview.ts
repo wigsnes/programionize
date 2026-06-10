@@ -42,8 +42,22 @@ export function previewBlockAfterDrop(
 export function dragHintMessage(
   block: BlockView,
   session: CatalogSession,
+  aiFitLabel?: "strong" | "ok" | "weak",
 ): string | null {
   const preview = previewBlockAfterDrop(block, session);
+
+  if (aiFitLabel) {
+    const fitText =
+      aiFitLabel === "strong"
+        ? "Strong AI fit"
+        : aiFitLabel === "ok"
+          ? "OK AI fit"
+          : "Weak AI fit";
+    if (!sessionFitsBlock(session, block)) {
+      return `${fitText} · would be ${preview.totalMinutes} min`;
+    }
+    return fitText;
+  }
 
   if (!sessionFitsBlock(session, block)) {
     if (block.sessionCount >= 3 && !block.sessions.some((s) => s._id === session._id)) {

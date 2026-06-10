@@ -21,7 +21,13 @@ pnpm exec convex env set OPENAI_API_KEY "sk-…"
 
 If you see `Command "convex" not found`, run `pnpm install` at the repo root first.
 
-`OPENAI_API_KEY` powers **AI suggestions** at `/suggestions` (Vercel AI SDK + OpenAI). Suggestions are advisory and never write to program blocks.
+`OPENAI_API_KEY` powers **AI suggestions** at `/suggestions` (Vercel AI SDK + OpenAI). Import sessions in **Admin**, then generate thematic groupings. Preview and apply groups to a program page with confirmation.
+
+Optional model override (default `gpt-4o-mini`):
+
+```bash
+pnpm exec convex env set OPENAI_MODEL "gpt-4o-mini"
+```
 
 Optional — which Sessionize workflow statuses appear in the catalog and AI (comma-separated, default `Accept_Queue,Accepted`):
 

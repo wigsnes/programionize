@@ -14,7 +14,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "@programionize/backend/convex/_generated/api";
 import type { Id } from "@programionize/backend/convex/_generated/dataModel";
-import { Layers, PanelLeftOpen, Plus } from "lucide-react";
+import { Layers, PanelLeftOpen, Plus, Sparkles } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   CATALOG_DROP_ID,
@@ -25,6 +25,7 @@ import { dragHintMessage, sessionFitsBlock } from "../lib/drag-preview";
 import type { CatalogSession } from "../lib/sessions";
 import { useConfirm, usePrompt } from "./dialogs/DialogProvider";
 import { BlockPanel } from "./BlockPanel";
+import { AiHelperPanel } from "./AiHelperPanel";
 import {
   CommandPalette,
   useCommandPaletteShortcut,
@@ -76,6 +77,10 @@ export function ProgramWorkspace({
   const [catalogCollapsed, setCatalogCollapsed] = useState(false);
   const [mobileCatalogOpen, setMobileCatalogOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [aiFocusBlockId, setAiFocusBlockId] = useState<Id<"blocks"> | null>(
+    null,
+  );
   const [hoveredBlockId, setHoveredBlockId] = useState<Id<"blocks"> | null>(
     null,
   );
@@ -102,12 +107,29 @@ export function ProgramWorkspace({
     return workspace.blocks.find((block) => block._id === selectedBlockId) ?? null;
   }, [selectedBlockId, workspace]);
 
+  const fitMatrix = useQuery(
+    api.aiBlocking.getFitMatrix,
+    sessionToken && activeSession && workspace && workspace.blocks.length > 0
+      ? {
+          sessionToken,
+          sessionId: activeSession._id as Id<"sessions">,
+          blockIds: workspace.blocks.map((block) => block._id),
+        }
+      : "skip",
+  );
+
+  const fitLabel = useMemo(() => {
+    if (!hoveredBlockId || !fitMatrix) return undefined;
+    const fit = fitMatrix[hoveredBlockId];
+    return fit?.label;
+  }, [fitMatrix, hoveredBlockId]);
+
   const dragHint = useMemo(() => {
     if (!activeSession || !workspace || !hoveredBlockId) return null;
     const block = workspace.blocks.find((entry) => entry._id === hoveredBlockId);
     if (!block) return null;
-    return dragHintMessage(block, activeSession);
-  }, [activeSession, workspace, hoveredBlockId]);
+    return dragHintMessage(block, activeSession, fitLabel);
+  }, [activeSession, workspace, hoveredBlockId, fitLabel]);
 
   function findSession(sessionId: string): CatalogSession | undefined {
     const fromCatalog = catalogSessions.find(
@@ -267,6 +289,14 @@ export function ProgramWorkspace({
             onSelect={setSelectedBlockId}
             onRename={handleRenameBlock}
             onRemove={(blockId) => void handleRemoveBlock(blockId)}
+            onAiComplete={(blockId) => {
+              setAiFocusBlockId(blockId);
+              setAiPanelOpen(true);
+            }}
+            onAiReview={(blockId) => {
+              setAiFocusBlockId(blockId);
+              setAiPanelOpen(true);
+            }}
           />
         ))
       )}
@@ -301,6 +331,10 @@ export function ProgramWorkspace({
                 onCreateBlock={() =>
                   createBlock({ sessionToken, programPageId })
                 }
+                onOpenAi={() => {
+                  setAiFocusBlockId(selectedBlockId);
+                  setAiPanelOpen(true);
+                }}
               />
               <div className="min-h-0 flex-1 overflow-y-auto">{blockList}</div>
             </section>
@@ -319,6 +353,10 @@ export function ProgramWorkspace({
                 onCreateBlock={() =>
                   createBlock({ sessionToken, programPageId })
                 }
+                onOpenAi={() => {
+                  setAiFocusBlockId(selectedBlockId);
+                  setAiPanelOpen(true);
+                }}
               />
               <div className="min-h-0 flex-1 overflow-y-auto">{blockList}</div>
             </section>
@@ -333,6 +371,10 @@ export function ProgramWorkspace({
               }
               mobile
               onOpenCatalog={() => setMobileCatalogOpen(true)}
+              onOpenAi={() => {
+                setAiFocusBlockId(selectedBlockId);
+                setAiPanelOpen(true);
+              }}
             />
             <div className="min-h-0 flex-1 overflow-y-auto">{blockList}</div>
           </section>
@@ -372,6 +414,25 @@ export function ProgramWorkspace({
         onOpenChange={setCommandOpen}
         onFocusCatalog={focusCatalogSearch}
       />
+      <AiHelperPanel
+        open={aiPanelOpen}
+        onOpenChange={setAiPanelOpen}
+        sessionToken={sessionToken}
+        programPageId={programPageId}
+        pageName={workspace.page.name}
+        blockCount={workspace.blocks.length}
+        placedCount={workspace.assignedSessionIds.length}
+        unassignedCount={catalogSessions.length}
+        focusBlockId={aiFocusBlockId}
+        workspaceBlocks={workspace.blocks.map((block) => ({
+          _id: block._id,
+          label: block.label,
+          sessions: block.sessions.map((session) => ({
+            sessionizeId: session.sessionizeId,
+            title: session.title,
+          })),
+        }))}
+      />
     </DndContext>
   );
 }
@@ -380,12 +441,14 @@ function WorkspaceHeader({
   pageName,
   blockStats,
   onCreateBlock,
+  onOpenAi,
   mobile = false,
   onOpenCatalog,
 }: {
   pageName: string;
   blockStats: { count: number; totalMinutes: number };
   onCreateBlock: () => void;
+  onOpenAi?: () => void;
   mobile?: boolean;
   onOpenCatalog?: () => void;
 }) {
@@ -410,6 +473,12 @@ function WorkspaceHeader({
           <Button variant="outline" size="sm" onClick={onOpenCatalog}>
             <PanelLeftOpen className="size-4" />
             Sessions
+          </Button>
+        ) : null}
+        {onOpenAi ? (
+          <Button variant="outline" size="sm" onClick={onOpenAi}>
+            <Sparkles className="size-4" />
+            <span className="max-lg:sr-only">AI Helper</span>
           </Button>
         ) : null}
         <Button variant="outline" size="sm" onClick={onCreateBlock}>
