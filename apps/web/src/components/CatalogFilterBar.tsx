@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { sessionLanguageLabel } from "@/lib/session-language";
 import { fieldDotColor, lengthBarColor } from "@/lib/field-colors";
 import { cn } from "@/lib/utils";
 import type { SelectedBlockStats } from "@/lib/sessions";
@@ -9,6 +10,9 @@ type CatalogFilterBarProps = {
   fields: string[];
   selectedField: string | null;
   onFieldChange: (field: string | null) => void;
+  languages: string[];
+  selectedLanguage: string | null;
+  onLanguageChange: (language: string | null) => void;
   lengths: number[];
   selectedLength: number | null;
   onLengthChange: (length: number | null) => void;
@@ -50,6 +54,9 @@ export function CatalogFilterBar({
   fields,
   selectedField,
   onFieldChange,
+  languages,
+  selectedLanguage,
+  onLanguageChange,
   lengths,
   selectedLength,
   onLengthChange,
@@ -84,6 +91,27 @@ export function CatalogFilterBar({
           </FilterPill>
         ))}
       </div>
+      {languages.length > 0 ? (
+        <div className="flex flex-wrap gap-1">
+          <FilterPill
+            active={selectedLanguage === null}
+            onClick={() => onLanguageChange(null)}
+          >
+            All languages
+          </FilterPill>
+          {languages.map((language) => (
+            <FilterPill
+              key={language}
+              active={selectedLanguage === language}
+              onClick={() =>
+                onLanguageChange(selectedLanguage === language ? null : language)
+              }
+            >
+              {sessionLanguageLabel(language) ?? language}
+            </FilterPill>
+          ))}
+        </div>
+      ) : null}
       {lengths.length > 0 ? (
         <div className="flex flex-wrap gap-1">
           <FilterPill

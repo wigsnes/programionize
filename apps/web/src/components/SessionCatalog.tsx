@@ -8,12 +8,14 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import {
   filterByField,
+  filterByLanguage,
   filterByLength,
   filterFitsBlock,
   filterSessions,
   partitionCatalogSessions,
   sortSessions,
   uniqueFields,
+  uniqueLanguages,
   uniqueLengths,
   type CatalogSession,
   type SelectedBlockStats,
@@ -45,6 +47,7 @@ export function SessionCatalog({
 }: SessionCatalogProps) {
   const [query, setQuery] = useState("");
   const [selectedField, setSelectedField] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [selectedLength, setSelectedLength] = useState<number | null>(null);
   const [fitsBlockOnly, setFitsBlockOnly] = useState(false);
 
@@ -59,11 +62,13 @@ export function SessionCatalog({
   );
 
   const fields = useMemo(() => uniqueFields(schedulable), [schedulable]);
+  const languages = useMemo(() => uniqueLanguages(schedulable), [schedulable]);
   const lengths = useMemo(() => uniqueLengths(schedulable), [schedulable]);
 
   const visibleSchedulable = useMemo(() => {
     let result = schedulable;
     result = filterByField(result, selectedField);
+    result = filterByLanguage(result, selectedLanguage);
     result = filterByLength(result, selectedLength);
     result = filterSessions(result, query);
     if (fitsBlockOnly) {
@@ -73,6 +78,7 @@ export function SessionCatalog({
   }, [
     schedulable,
     selectedField,
+    selectedLanguage,
     selectedLength,
     query,
     fitsBlockOnly,
@@ -144,6 +150,9 @@ export function SessionCatalog({
           fields={fields}
           selectedField={selectedField}
           onFieldChange={setSelectedField}
+          languages={languages}
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={setSelectedLanguage}
           lengths={lengths}
           selectedLength={selectedLength}
           onLengthChange={setSelectedLength}

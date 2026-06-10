@@ -21,6 +21,7 @@ const importedSessionValidator = v.object({
   title: v.string(),
   description: v.union(v.string(), v.null()),
   field: v.union(v.string(), v.null()),
+  language: v.optional(v.union(v.string(), v.null())),
   lengthMinutes: v.union(v.number(), v.null()),
   isServiceSession: v.boolean(),
   speakerNames: v.array(v.string()),
@@ -100,6 +101,7 @@ function mapSession(session: {
   title: string;
   description: string | null;
   field: string | null;
+  language?: string | null;
   lengthMinutes: number | null;
   isServiceSession: boolean;
   speakerNames: string[];
@@ -113,6 +115,7 @@ function mapSession(session: {
     title: session.title,
     description: session.description,
     field: session.field,
+    language: session.language ?? null,
     lengthMinutes: session.lengthMinutes,
     isServiceSession: session.isServiceSession,
     speakerNames: session.speakerNames,

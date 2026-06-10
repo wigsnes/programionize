@@ -7,6 +7,7 @@ const baseSession = {
   title: "Withdrawn talk",
   description: null,
   field: "Dev",
+  language: null,
   lengthMinutes: 30,
   speakerNames: [],
   sessionizeStatus: "Accept_Queue",
@@ -15,6 +16,35 @@ const baseSession = {
 };
 
 describe("SessionCard", () => {
+  it("shows a language badge when language is set", () => {
+    const { container } = render(
+      <SessionCard
+        session={{ ...baseSession, language: "Norwegian" }}
+      />,
+    );
+
+    expect(within(container).getByText("Norwegian")).toBeInTheDocument();
+  });
+
+  it("normalizes Norsk to Norwegian in the badge", () => {
+    const { container } = render(
+      <SessionCard
+        session={{ ...baseSession, language: "Norsk" }}
+      />,
+    );
+
+    expect(within(container).getByText("Norwegian")).toBeInTheDocument();
+  });
+
+  it("omits language badge when language is null", () => {
+    const { container } = render(
+      <SessionCard session={{ ...baseSession, language: null }} />,
+    );
+
+    expect(within(container).queryByText("Norwegian")).toBeNull();
+    expect(within(container).queryByText("English")).toBeNull();
+  });
+
   it("shows a service label for non-schedulable service sessions", () => {
     const { container } = render(
       <SessionCard

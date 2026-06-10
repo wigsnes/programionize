@@ -17,6 +17,13 @@ const categories: CategoryAll[] = [
     sort: 1,
     items: [{ id: 20, name: "30 min" }],
   },
+  {
+    id: 3,
+    title: "Language",
+    type: "Language",
+    sort: 2,
+    items: [{ id: 30, name: "Norwegian" }],
+  },
 ];
 
 const session: SessionALl = {
@@ -35,7 +42,7 @@ const session: SessionALl = {
   isInformed: true,
   isConfirmed: true,
   speakers: ["speaker-1"],
-  categoryItems: [10, 20],
+  categoryItems: [10, 20, 30],
 };
 
 describe("mapAllSessions", () => {
@@ -81,8 +88,37 @@ describe("mapAllSessions", () => {
 
     expect(mapAllSessions(data)[0]).toMatchObject({
       field: "Architecture",
+      language: "Norwegian",
       lengthMinutes: 30,
+      language: null,
     });
+  });
+
+  it("maps Language from Sessionize categories", () => {
+    const data: SessionizeAll = {
+      sessions: [{ ...session, categoryItems: [10, 20, 30] }],
+      speakers: [
+        {
+          id: "speaker-1",
+          firstName: "Ada",
+          lastName: "Lovelace",
+          fullName: "Ada Lovelace",
+          bio: null,
+          tagLine: "",
+          profilePicture: null,
+          isTopSpeaker: false,
+          links: [],
+          sessions: [],
+          categoryItems: [],
+          questionAnswers: [],
+        },
+      ],
+      questions: [],
+      categories,
+      rooms: [],
+    };
+
+    expect(mapAllSessions(data)[0]?.language).toBe("Norwegian");
   });
 
   it("maps Field and session length from Sessionize categories", () => {
@@ -115,6 +151,7 @@ describe("mapAllSessions", () => {
       sessionizeId: "abc",
       title: "Building blocks",
       field: "Architecture",
+      language: "Norwegian",
       lengthMinutes: 30,
       isServiceSession: false,
       speakerNames: ["Ada Lovelace"],

@@ -12,6 +12,7 @@ export type CatalogSession = {
   title: string;
   description: string | null;
   field: string | null;
+  language: string | null;
   lengthMinutes: number | null;
   speakerNames: string[];
   isServiceSession: boolean;
@@ -76,6 +77,7 @@ export function filterSessions(
     const haystack = [
       session.title,
       session.description ?? "",
+      session.language ?? "",
       ...session.speakerNames,
     ]
       .join(" ")
@@ -98,6 +100,22 @@ export function filterByField(
 ): CatalogSession[] {
   if (!field) return sessions;
   return sessions.filter((session) => session.field === field);
+}
+
+export function uniqueLanguages(sessions: CatalogSession[]): string[] {
+  const languages = new Set<string>();
+  for (const session of sessions) {
+    if (session.language) languages.add(session.language);
+  }
+  return [...languages].sort((a, b) => a.localeCompare(b));
+}
+
+export function filterByLanguage(
+  sessions: CatalogSession[],
+  language: string | null,
+): CatalogSession[] {
+  if (!language) return sessions;
+  return sessions.filter((session) => session.language === language);
 }
 
 export function uniqueLengths(sessions: CatalogSession[]): number[] {

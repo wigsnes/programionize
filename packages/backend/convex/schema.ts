@@ -11,6 +11,7 @@ export default defineSchema({
     title: v.string(),
     description: v.union(v.string(), v.null()),
     field: v.union(v.string(), v.null()),
+    language: v.optional(v.union(v.string(), v.null())),
     lengthMinutes: v.union(v.number(), v.null()),
     isServiceSession: v.boolean(),
     speakerNames: v.array(v.string()),

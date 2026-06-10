@@ -6,6 +6,7 @@ const session = (overrides: Record<string, unknown> = {}) => ({
   title: "Talk",
   description: null,
   field: "Dev",
+  language: null,
   lengthMinutes: 30,
   speakerNames: [],
   isServiceSession: false,

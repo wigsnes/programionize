@@ -5,6 +5,7 @@ export type ImportedSession = {
   title: string;
   description: string | null;
   field: string | null;
+  language: string | null;
   lengthMinutes: number | null;
   isServiceSession: boolean;
   speakerNames: string[];

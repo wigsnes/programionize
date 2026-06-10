@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   effectiveShowInCatalog,
+  filterByLanguage,
   filterSessions,
   isHiddenFromCatalog,
   isSchedulableSession,
@@ -15,6 +16,7 @@ const sample: CatalogSession[] = [
     title: "Beta",
     description: null,
     field: "Dev",
+    language: "Norwegian",
     lengthMinutes: 45,
     speakerNames: [],
     isServiceSession: false,
@@ -26,6 +28,7 @@ const sample: CatalogSession[] = [
     title: "Alpha",
     description: "kubernetes deep dive",
     field: "Ops",
+    language: "English",
     lengthMinutes: 15,
     speakerNames: ["Jane"],
     isServiceSession: false,
@@ -97,8 +100,19 @@ describe("sortSessions", () => {
   });
 });
 
+describe("filterByLanguage", () => {
+  it("filters sessions by language", () => {
+    expect(filterByLanguage(sample, "Norwegian").map((s) => s.title)).toEqual([
+      "Beta",
+    ]);
+    expect(filterByLanguage(sample, "English").map((s) => s.title)).toEqual([
+      "Alpha",
+    ]);
+  });
+});
+
 describe("filterSessions", () => {
-  it("finds sessions by title, description, or speaker", () => {
+  it("finds sessions by title, description, speaker, or language", () => {
     expect(filterSessions(sample, "kubernetes").map((s) => s.title)).toEqual([
       "Alpha",
     ]);
@@ -106,6 +120,9 @@ describe("filterSessions", () => {
       "Alpha",
     ]);
     expect(filterSessions(sample, "beta").map((s) => s.title)).toEqual([
+      "Beta",
+    ]);
+    expect(filterSessions(sample, "norwegian").map((s) => s.title)).toEqual([
       "Beta",
     ]);
   });

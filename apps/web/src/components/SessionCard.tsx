@@ -11,6 +11,7 @@ import {
   sessionHeightPx,
 } from "../lib/field-colors";
 import { plainSessionDescription } from "../lib/session-description";
+import { sessionLanguageLabel } from "../lib/session-language";
 import { isHiddenFromCatalog, type CatalogSession } from "../lib/sessions";
 
 export type SessionCardProps = {
@@ -25,6 +26,7 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
   const stripeColor = fieldStripeColor(session.field);
   const durationColor = lengthBarColor(session.lengthMinutes);
   const plainDescription = plainSessionDescription(session.description);
+  const languageLabel = sessionLanguageLabel(session.language);
 
   return (
     <article
@@ -64,6 +66,11 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
           >
             {session.field ?? "No field"}
           </Badge>
+          {languageLabel ? (
+            <Badge variant="outline" className="text-[0.6rem]">
+              {languageLabel}
+            </Badge>
+          ) : null}
           <span className="ml-auto text-xs font-medium text-foreground/60 tabular-nums">
             {session.lengthMinutes ? `${session.lengthMinutes} min` : "?"}
           </span>

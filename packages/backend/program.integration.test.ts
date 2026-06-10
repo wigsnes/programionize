@@ -26,6 +26,7 @@ describe("program workspace", () => {
           title: "Talk one",
           description: null,
           field: "Dev",
+          language: "Norwegian",
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -37,6 +38,7 @@ describe("program workspace", () => {
           title: "Talk two",
           description: null,
           field: "Ops",
+          language: null,
           lengthMinutes: 45,
           isServiceSession: false,
           speakerNames: [],
@@ -62,6 +64,7 @@ describe("program workspace", () => {
     const workspace = await t.query(api.program.getWorkspace, { sessionToken });
     expect(workspace.blocks).toHaveLength(1);
     expect(workspace.blocks[0]?.sessions).toHaveLength(1);
+    expect(workspace.blocks[0]?.sessions[0]?.language).toBe("Norwegian");
     expect(workspace.blocks[0]?.totalMinutes).toBe(30);
     expect(workspace.assignedSessionIds).toEqual([talkOne!._id]);
 
@@ -87,6 +90,7 @@ describe("program workspace", () => {
           title: "Talk one",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -98,6 +102,7 @@ describe("program workspace", () => {
           title: "Talk two",
           description: null,
           field: "Ops",
+          language: null,
           lengthMinutes: 45,
           isServiceSession: false,
           speakerNames: [],
@@ -127,6 +132,7 @@ describe("program workspace", () => {
           title: "Talk two",
           description: null,
           field: "Ops",
+          language: null,
           lengthMinutes: 45,
           isServiceSession: false,
           speakerNames: [],
@@ -138,6 +144,7 @@ describe("program workspace", () => {
           title: "Talk three",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 15,
           isServiceSession: false,
           speakerNames: [],
@@ -171,6 +178,7 @@ describe("program workspace", () => {
           title: "Talk one",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -253,6 +261,7 @@ describe("program workspace", () => {
           title: "First",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -264,6 +273,7 @@ describe("program workspace", () => {
           title: "Second",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -275,6 +285,7 @@ describe("program workspace", () => {
           title: "Third",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],

@@ -41,6 +41,7 @@ function session(
     title: "A",
     description: null,
     field: "Dev",
+    language: null,
     lengthMinutes: 45,
     speakerNames: [],
     sessionizeStatus: "Accept_Queue",
@@ -51,6 +52,23 @@ function session(
 }
 
 describe("BlockPanel", () => {
+  it("shows language on block session cards", () => {
+    const { container } = render(
+      <BlockPanel
+        block={makeBlock({
+          sessionCount: 1,
+          totalMinutes: 45,
+          sessions: [session({ language: "Norwegian" })],
+        })}
+        activeDragId={null}
+        onRename={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    expect(within(container).getByText("Norwegian")).toBeInTheDocument();
+  });
+
   it("shows compact warning indicator when block rules fail", () => {
     const { container } = render(
       <BlockPanel

@@ -40,6 +40,10 @@ export function mapAllSessions(data: SessionizeAll): ImportedSession[] {
     const lookups = buildCategoryLookups(session, data.categories);
     const field =
       lookups.find((entry) => entry.key === "Field")?.name ?? null;
+    const language =
+      lookups.find(
+        (entry) => entry.key === "Language" || entry.key === "Språk",
+      )?.name ?? null;
     const lengthLabel =
       lookups.find((entry) => entry.key === "Session length")?.name ?? null;
 
@@ -48,6 +52,7 @@ export function mapAllSessions(data: SessionizeAll): ImportedSession[] {
       title: session.title,
       description: session.description,
       field,
+      language,
       lengthMinutes: parseLengthMinutes(lengthLabel),
       isServiceSession: session.isServiceSession,
       speakerNames: session.speakers

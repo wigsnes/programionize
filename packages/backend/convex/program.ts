@@ -69,6 +69,7 @@ async function loadWorkspace(ctx: QueryCtx, pageId: Id<"programPages">) {
         title: session.title,
         description: session.description,
         field: session.field,
+        language: session.language ?? null,
         lengthMinutes: session.lengthMinutes,
         isServiceSession: session.isServiceSession,
         speakerNames: session.speakerNames,

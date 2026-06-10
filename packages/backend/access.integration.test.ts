@@ -26,6 +26,7 @@ describe("magic link access", () => {
           title: "Talk",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],

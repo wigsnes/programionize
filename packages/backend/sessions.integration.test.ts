@@ -17,6 +17,7 @@ describe("sessions import", () => {
           title: "Zebra talk",
           description: null,
           field: "Dev",
+          language: "Norwegian",
           lengthMinutes: 60,
           isServiceSession: false,
           speakerNames: ["Ada"],
@@ -28,6 +29,7 @@ describe("sessions import", () => {
           title: "Alpha talk",
           description: "Details",
           field: "Ops",
+          language: "English",
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -46,6 +48,8 @@ describe("sessions import", () => {
     const listed = await t.query(api.sessions.list, { sessionToken });
     expect(listed).toHaveLength(2);
     expect(listed.map((s) => s.title).sort()).toEqual(["Alpha talk", "Zebra talk"]);
+    expect(listed.find((s) => s.title === "Zebra talk")?.language).toBe("Norwegian");
+    expect(listed.find((s) => s.title === "Alpha talk")?.language).toBe("English");
   });
 
   it("toggles catalog visibility and preserves it on re-import", async () => {
@@ -59,6 +63,7 @@ describe("sessions import", () => {
           title: "Visible talk",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -96,6 +101,7 @@ describe("sessions import", () => {
           title: "Visible talk updated",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
@@ -122,6 +128,7 @@ describe("sessions import", () => {
           title: "Placed talk",
           description: null,
           field: "Dev",
+          language: null,
           lengthMinutes: 30,
           isServiceSession: false,
           speakerNames: [],
