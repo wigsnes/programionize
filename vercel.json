@@ -1,5 +1,5 @@
 {
-  "buildCommand": "turbo run build",
+  "buildCommand": "pnpm turbo run build --filter=@programionize/web",
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install"
 }
