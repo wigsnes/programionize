@@ -49,4 +49,33 @@ describe("SessionCard", () => {
     expect(within(container).getByText("Hidden")).toBeInTheDocument();
     expect(within(container).getByRole("article")).toHaveClass("opacity-70");
   });
+
+  it("renders stripped plain description when description contains HTML", () => {
+    const { container } = render(
+      <SessionCard
+        session={{
+          ...baseSession,
+          description: "<b>Deep dive</b> into <p>Kubernetes</p>",
+        }}
+      />,
+    );
+
+    expect(within(container).getByText("Deep dive into Kubernetes")).toBeInTheDocument();
+  });
+
+  it("omits description when null or empty", () => {
+    const { container: nullContainer } = render(
+      <SessionCard session={{ ...baseSession, description: null }} />,
+    );
+    expect(
+      nullContainer.querySelector('[data-slot="hover-card"]'),
+    ).toBeNull();
+
+    const { container: emptyContainer } = render(
+      <SessionCard session={{ ...baseSession, description: "   " }} />,
+    );
+    expect(
+      emptyContainer.querySelector('[data-slot="hover-card"]'),
+    ).toBeNull();
+  });
 });

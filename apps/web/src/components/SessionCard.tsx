@@ -1,10 +1,16 @@
 import { Badge } from "@/components/ui/badge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 import {
   fieldStripeColor,
   lengthBarColor,
   sessionHeightPx,
 } from "../lib/field-colors";
+import { plainSessionDescription } from "../lib/session-description";
 import { isHiddenFromCatalog, type CatalogSession } from "../lib/sessions";
 
 export type SessionCardProps = {
@@ -18,6 +24,7 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
   const isService = session.isServiceSession;
   const stripeColor = fieldStripeColor(session.field);
   const durationColor = lengthBarColor(session.lengthMinutes);
+  const plainDescription = plainSessionDescription(session.description);
 
   return (
     <article
@@ -87,6 +94,22 @@ export function SessionCard({ session, variant = "compact" }: SessionCardProps) 
             {session.speakerNames.join(", ")}
           </p>
         )}
+        {plainDescription ? (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <p className="mt-1 line-clamp-2 text-xs text-foreground/55">
+                {plainDescription}
+              </p>
+            </HoverCardTrigger>
+            <HoverCardContent
+              side="right"
+              align="start"
+              className="max-h-64 w-80 overflow-y-auto"
+            >
+              <p className="text-sm leading-relaxed">{plainDescription}</p>
+            </HoverCardContent>
+          </HoverCard>
+        ) : null}
       </div>
     </article>
   );
